@@ -76,9 +76,8 @@ Python获取bilibili直播弹幕的库，使用WebSocket协议，支持web端和
 在这打开终端 
 
 <img width="965" height="510" alt="image" src="https://github.com/user-attachments/assets/0d4d48cd-f499-48dc-ba2e-6cd3f5847da8" />
-输入```python .\sample.py```
 
-就可以监听直播了
+输入```python .\sample.py```就可以监听直播了
 
 手动操作还是打开```start_all.bat```入队出队
 
