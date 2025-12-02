@@ -29,3 +29,5 @@ Python获取bilibili直播弹幕的库，使用WebSocket协议，支持web端和
 
 访问http://localhost:8080/
 
+<img width="887" height="509" alt="image" src="https://github.com/user-attachments/assets/3e85a7b6-224c-4a2f-ad75-d07992fd1e42" />
+
