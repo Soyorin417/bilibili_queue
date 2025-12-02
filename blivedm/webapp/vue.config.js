@@ -5,9 +5,9 @@ module.exports = defineConfig({
   devServer: {
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:5000",
+        target: "http://127.0.0.1:5000", // 本地后端服务
         changeOrigin: true,
-        pathRewrite: { '^/api': '' } // 或用 rewrite: path => path.replace(/^\/api/, "")
+        pathRewrite: { '^/api': '' },   
       }
     }
   }

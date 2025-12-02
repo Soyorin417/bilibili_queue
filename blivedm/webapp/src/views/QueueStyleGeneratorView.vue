@@ -12,7 +12,10 @@
         :class="{ 'fade-in': animation !== 'none' }"
         :style="queueItemStyle(user, index)"
       >
-        <img :src="getAvatar(user.face)" />
+        <img
+          :src="getAvatar(user.face)"
+          :style="{ borderRadius: avatarRound ? '50%' : '8px' }"
+        />
         <span>
           {{ showIndex ? index + 1 + ". " + user.uname : user.uname }}
         </span>
@@ -64,8 +67,17 @@
 
       <!-- 圆角 -->
       <div class="col-md-4">
-        <label class="form-label">圆角(px)</label>
+        <label class="form-label">队列项圆角(px)</label>
         <input type="number" class="form-control" v-model.number="radius" />
+      </div>
+
+      <!-- 头像圆形开关 -->
+      <div class="col-md-4">
+        <label class="form-label">头像圆形</label>
+        <select class="form-select" v-model="avatarRound">
+          <option :value="true">是</option>
+          <option :value="false">否</option>
+        </select>
       </div>
 
       <!-- 边框颜色 -->
@@ -88,6 +100,18 @@
       <div class="col-md-4">
         <label class="form-label">行距(px)</label>
         <input type="number" class="form-control" v-model.number="itemGap" />
+      </div>
+
+      <!-- 左边距 -->
+      <div class="col-md-4">
+        <label class="form-label">左边距(px)</label>
+        <input type="number" class="form-control" v-model.number="leftMargin" />
+      </div>
+
+      <!-- 上边距 -->
+      <div class="col-md-4">
+        <label class="form-label">上边距(px)</label>
+        <input type="number" class="form-control" v-model.number="topMargin" />
       </div>
 
       <!-- 缩放 -->
@@ -157,40 +181,45 @@
 <script setup>
 import { ref, computed } from "vue";
 import NavBar from "@/components/NavBar.vue";
+import axios from "axios";
 
+// 写入 CSS 文件
+async function writeCSSFile() {
+  try {
+    await axios.post("/api/write-css", { css: generatedCSS.value });
+    alert("queue.css 已写入成功！");
+  } catch (e) {
+    console.error(e);
+    alert("写入 queue.css 失败");
+  }
+}
+
+// 默认头像
 const defaultAvatar = new URL("@/assets/default_avatar.png", import.meta.url).href;
-
-// 图片路径修复器
+const avatarRound = ref(true);
 function getAvatar(path) {
   if (!path) return defaultAvatar;
-
-  // 完整 URL 直接返回
   if (path.startsWith("http")) return path;
-
-  // 只写文件名 → 自动转 assets 路径
   return new URL(`@/assets/${path}`, import.meta.url).href;
 }
 
-// ----- 控制变量 -----
+// 控制变量
 const fontSize = ref(36);
 const fontColor = ref("#ffffff");
 const bgColor = ref("#000000");
 const bgOpacity = ref(0.2);
-
 const shadow = ref("none");
 const radius = ref(8);
 const borderColor = ref("#1E90FF");
 const borderWidth = ref(5);
 const itemGap = ref(5);
-
+const leftMargin = ref(20); // 新增左边距
 const scale = ref(1);
 const blur = ref(0);
-
 const showIndex = ref(true);
-
 const animation = ref("fade");
 const animationTime = ref(0.5);
-
+const topMargin = ref(10);
 const generatedCSS = ref("");
 
 // 示例数据
@@ -200,9 +229,6 @@ const sampleQueue = ref([
 
 // 预览整体样式
 const previewStyle = computed(() => ({
-  background: `${bgColor.value}${Math.floor(bgOpacity.value * 255)
-    .toString(16)
-    .padStart(2, "0")}`,
   filter: `blur(${blur.value}px)`,
   transform: `scale(${scale.value})`,
   transformOrigin: "top left",
@@ -220,6 +246,8 @@ function queueItemStyle(user) {
     borderRadius: radius.value + "px",
     padding: "10px 20px",
     marginBottom: itemGap.value + "px",
+    marginLeft: leftMargin.value + "px", // 左边距
+    marginTop: topMargin.value + "px", // 上边距
     display: "flex",
     alignItems: "center",
     gap: "10px",
@@ -244,6 +272,8 @@ function applyStyles() {
   border-left: ${borderWidth.value}px solid ${borderColor.value};
   border-radius: ${radius.value}px;
   margin-bottom: ${itemGap.value}px;
+  margin-left: ${leftMargin.value}px; /* 左边距 */
+  margin-top: ${topMargin.value}px;   /* 上边距 */
   padding: 10px 20px;
   display: flex;
   align-items: center;
@@ -254,12 +284,13 @@ function applyStyles() {
 
 .queue-item img {
   object-fit: cover;
+  width: 48px;
+  height: 48px;
+  border-radius: ${avatarRound.value ? "50%" : "8px"};
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 #preview {
-  background: ${bgColor.value}${Math.floor(bgOpacity.value * 255)
-    .toString(16)
-    .padStart(2, "0")};
   filter: blur(${blur.value}px);
   transform: scale(${scale.value});
   transform-origin: top left;
@@ -281,19 +312,21 @@ ${
 `;
 }
 
-// 复制
-function copyCSS() {
-  navigator.clipboard.writeText(generatedCSS.value);
-  alert("CSS 已复制！");
+// 复制 CSS
+async function copyCSS() {
+  try {
+    await navigator.clipboard.writeText(generatedCSS.value);
+    await writeCSSFile();
+    alert("CSS 已复制并写入成功！");
+  } catch (e) {
+    console.error(e);
+    alert("复制或写入失败：" + e.message);
+  }
 }
 </script>
 
 <style scoped>
 .queue-item img {
   object-fit: cover;
-}
-img {
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 </style>

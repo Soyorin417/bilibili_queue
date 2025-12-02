@@ -9,7 +9,7 @@ REM 启动 Vue 前端开发服务器
 start "" npm run serve
 
 REM 返回根目录
-cd ../..
+cd ..\..\..
 
 echo 前后端已启动
 pause

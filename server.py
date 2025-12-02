@@ -3,6 +3,8 @@ from flask_cors import CORS
 import json
 import os
 
+print("正在运行的 server.py 路径：", os.path.abspath(__file__))
+
 app = Flask(__name__)
 CORS(app)  # 允许所有来源
 
@@ -72,6 +74,26 @@ def get_keywords():
         "join_words": data.get("join_words", []),
         "pop_words": data.get("pop_words", [])
     }
+@app.post("/write-css")
+def write_css():
+    data = request.json
+    css_content = data.get("css")
+    if not css_content:
+        return jsonify({"status": "error", "msg": "缺少 CSS 内容"}), 400
+
+    # 写入目标路径
+    css_path = os.path.join(os.path.dirname(__file__), "blivedm/webapp/src/assets/queue.css")
+
+    try:
+        with open(css_path, "w", encoding="utf-8") as f:
+            f.write(css_content)
+        print("queue.css 已更新:", css_path)
+        return jsonify({"status": "ok"})
+    except Exception as e:
+        print("写入 queue.css 失败:", e)
+        return jsonify({"status": "error", "msg": str(e)}), 500
+
+
 
 # -------- 保存关键词 --------
 @app.post("/keywords")
@@ -94,7 +116,7 @@ def save_keywords():
 
     print("关键词已更新:", config_data)
     return jsonify({"status": "ok"})
-
+print("ROUTES:", app.url_map)
 # -------- 启动服务器 --------
 if __name__ == "__main__":
     app.run(port=5000)
