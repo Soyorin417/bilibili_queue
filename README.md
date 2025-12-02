@@ -58,9 +58,7 @@ Python获取bilibili直播弹幕的库，使用WebSocket协议，支持web端和
 
 
 
-此时你的剪贴版会有css格式
-
-打开obs新建立浏览器源
+此时你的剪贴版会有css格式，打开obs新建立浏览器源
 
 <img width="611" height="389" alt="image" src="https://github.com/user-attachments/assets/83d4f299-28de-4151-b67b-c6ae31514bb9" />
 
